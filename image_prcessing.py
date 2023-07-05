@@ -29,14 +29,13 @@ logging.basicConfig(level=logging.INFO,
 
 
 def download_image_from_s3(img_name):
-    download_path = '/tmp/{}{}'.format(uuid.uuid4(), img_name)
+    download_path = f'/tmp/{uuid.uuid4()}{img_name}'
     s3_client.download_file(input_bucket, img_name, download_path)
     return download_path
 
 
 def download_image_locally(img_name):
-    download_path = os.path.join("/tmp", img_name)
-    return download_path
+    return os.path.join("/tmp", img_name)
 
 
 def upload_image_to_s3(path):
@@ -46,18 +45,16 @@ def upload_image_to_s3(path):
 
 
 def upload_image_locally(path):
-    file_name_path = path.split("/")[FILE_NAME_INDEX]
-    # s3_client.upload_file(path, output_bucket, file_name_path)
-    return file_name_path
+    return path.split("/")[FILE_NAME_INDEX]
 
 
 def process_flip(download_path, img_name):
     with Image.open(download_path) as image:
-        path = TMP + "flip-left-right-" + img_name
+        path = f"{TMP}flip-left-right-{img_name}"
         img = image.transpose(Image.FLIP_LEFT_RIGHT)
         img.save(path)
 
-        path = TMP + "flip-top-bottom-" + img_name
+        path = f"{TMP}flip-top-bottom-{img_name}"
         img = image.transpose(Image.FLIP_TOP_BOTTOM)
         img.save(path)
     return path
@@ -65,15 +62,15 @@ def process_flip(download_path, img_name):
 
 def process_rotate(download_path, img_name):
     with Image.open(download_path) as image:
-        path = TMP + "rotate-90-" + img_name
+        path = f"{TMP}rotate-90-{img_name}"
         img = image.transpose(Image.ROTATE_90)
         img.save(path)
 
-        path = TMP + "rotate-180-" + img_name
+        path = f"{TMP}rotate-180-{img_name}"
         img = image.transpose(Image.ROTATE_180)
         img.save(path)
 
-        path = TMP + "rotate-270-" + img_name
+        path = f"{TMP}rotate-270-{img_name}"
         img = image.transpose(Image.ROTATE_270)
         img.save(path)
     return path
@@ -81,15 +78,15 @@ def process_rotate(download_path, img_name):
 
 def process_image_filter(download_path, img_name):
     with Image.open(download_path) as image:
-        path = TMP + "blur-" + img_name
+        path = f"{TMP}blur-{img_name}"
         img = image.filter(ImageFilter.BLUR)
         img.save(path)
 
-        path = TMP + "contour-" + img_name
+        path = f"{TMP}contour-{img_name}"
         img = image.filter(ImageFilter.CONTOUR)
         img.save(path)
 
-        path = TMP + "sharpen-" + img_name
+        path = f"{TMP}sharpen-{img_name}"
         img = image.filter(ImageFilter.SHARPEN)
         img.save(path)
     return path
@@ -97,7 +94,7 @@ def process_image_filter(download_path, img_name):
 
 def process_gray_scale(download_path, img_name):
     with Image.open(download_path) as image:
-        path = TMP + "gray-scale-" + img_name
+        path = f"{TMP}gray-scale-{img_name}"
         img = image.convert('L')
         img.save(path)
     return path
@@ -105,7 +102,7 @@ def process_gray_scale(download_path, img_name):
 
 def process_resize(download_path, img_name):
     with Image.open(download_path) as image:
-        path = TMP + "resized-" + img_name
+        path = f"{TMP}resized-{img_name}"
         image.thumbnail((128, 128))
         image.save(path)
     return path
@@ -116,9 +113,7 @@ def flip(img_name):
 
     path = process_flip(download_path, img_name)
 
-    file_name_path = upload_image_locally(path)
-
-    return file_name_path
+    return upload_image_locally(path)
 
 
 def rotate(img_name):
@@ -126,9 +121,7 @@ def rotate(img_name):
 
     path = process_rotate(download_path, img_name)
 
-    file_name_path = upload_image_locally(path)
-
-    return file_name_path
+    return upload_image_locally(path)
 
 
 def image_filter(img_name):
@@ -136,9 +129,7 @@ def image_filter(img_name):
 
     path = process_image_filter(download_path, img_name)
 
-    file_name_path = upload_image_locally(path)
-
-    return file_name_path
+    return upload_image_locally(path)
 
 
 def gray_scale(img_name):
@@ -146,16 +137,14 @@ def gray_scale(img_name):
 
     path = process_gray_scale(download_path, img_name)
 
-    file_name_path = upload_image_locally(path)
-
-    return file_name_path
+    return upload_image_locally(path)
 
 
 def resize(img_name):
     download_path = os.path.join(save_path_dir, img_name)
 
     with Image.open(download_path) as image:
-        path = TMP + "resized-" + img_name
+        path = f"{TMP}resized-{img_name}"
         image.thumbnail((128, 128))
         image.save(path)
 
@@ -177,7 +166,7 @@ def image_processing(img_name):
 
 def main():
     image_list = {'image.jpg': '4742 x 2667'}
-    for each_image, dimension in image_list.items():
+    for each_image in image_list:
         image_processing(each_image)
 
 
